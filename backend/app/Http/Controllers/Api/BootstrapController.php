@@ -8,13 +8,13 @@ use App\Http\Resources\ExperienceResource;
 use App\Http\Resources\OrganizationEntryResource;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\ProjectResource;
-use App\Http\Resources\SkillResource;
+use App\Http\Resources\SkillCategoryResource;
 use App\Models\EducationEntry;
 use App\Models\Experience;
 use App\Models\OrganizationEntry;
 use App\Models\Profile;
 use App\Models\Project;
-use App\Models\Skill;
+use App\Models\SkillCategory;
 use Illuminate\Support\Facades\Cache;
 
 class BootstrapController extends Controller
@@ -30,7 +30,9 @@ class BootstrapController extends Controller
         $payload = Cache::remember("portfolio.bootstrap.{$locale}", now()->addMinutes(5), function () {
             return [
                 'profile' => (new ProfileResource(Profile::current()))->resolve(),
-                'skills' => SkillResource::collection(Skill::orderBy('order')->get())->resolve(),
+                'skills' => SkillCategoryResource::collection(
+                    SkillCategory::with('skills')->orderBy('order')->get()
+                )->resolve(),
                 'experiences' => ExperienceResource::collection(Experience::orderBy('order')->get())->resolve(),
                 'projects' => ProjectResource::collection(Project::orderBy('order')->get())->resolve(),
                 'education' => EducationEntryResource::collection(EducationEntry::orderBy('order')->get())->resolve(),

@@ -15,7 +15,13 @@ export interface Profile {
 export interface Skill {
   id: number;
   name: string;
-  category: "Backend" | "Frontend" | "Database" | "Tools" | string;
+}
+
+export interface SkillCategory {
+  id: number;
+  name: string;
+  highlighted: boolean;
+  skills: Skill[];
 }
 
 export interface Experience {
@@ -58,7 +64,7 @@ export interface OrganizationEntry {
 /** Shape of the combined /api/bootstrap payload. */
 export interface PortfolioBootstrap {
   profile: Profile;
-  skills: Skill[];
+  skills: SkillCategory[];
   experiences: Experience[];
   projects: Project[];
   education: EducationEntry[];

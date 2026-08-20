@@ -1,6 +1,6 @@
 import type {
   Profile,
-  Skill,
+  SkillCategory,
   Experience,
   Project,
   EducationEntry,
@@ -24,7 +24,7 @@ export const api = {
     get<PortfolioBootstrap>(`/bootstrap?lang=${lang}`),
   // Individual endpoints, kept for cases that need just one resource.
   getProfile: (lang: string) => get<Profile>(`/profile?lang=${lang}`),
-  getSkills: () => get<Skill[]>("/skills"),
+  getSkills: () => get<SkillCategory[]>("/skills"),
   getExperiences: (lang: string) =>
     get<Experience[]>(`/experiences?lang=${lang}`),
   getProjects: (lang: string) => get<Project[]>(`/projects?lang=${lang}`),

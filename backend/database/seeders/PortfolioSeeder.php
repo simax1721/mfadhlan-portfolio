@@ -8,6 +8,7 @@ use App\Models\OrganizationEntry;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Skill;
+use App\Models\SkillCategory;
 use Illuminate\Database\Seeder;
 
 class PortfolioSeeder extends Seeder
@@ -41,20 +42,40 @@ class PortfolioSeeder extends Seeder
 
     private function seedSkills(): void
     {
-        $skills = [
-            'AI-Assisted Development' => ['Vibe Coding', 'Claude Code', 'Codex'],
-            'Backend' => ['Laravel', 'PHP', 'Node.js', 'REST API', 'Authentication (Sanctum, OAuth)'],
-            'Frontend' => ['React.js', 'JavaScript', 'HTML', 'CSS', 'Bootstrap'],
-            'Database' => ['MySQL', 'PostgreSQL', 'Firebase'],
-            'Tools' => ['Git', 'GitHub', 'Postman'],
+        $categories = [
+            'AI-Assisted Development' => [
+                'highlighted' => true,
+                'skills' => ['Vibe Coding', 'Claude Code', 'Codex'],
+            ],
+            'Backend' => [
+                'highlighted' => false,
+                'skills' => ['Laravel', 'PHP', 'Node.js', 'REST API', 'Authentication (Sanctum, OAuth)'],
+            ],
+            'Frontend' => [
+                'highlighted' => false,
+                'skills' => ['React.js', 'JavaScript', 'HTML', 'CSS', 'Bootstrap'],
+            ],
+            'Database' => [
+                'highlighted' => false,
+                'skills' => ['MySQL', 'PostgreSQL', 'Firebase'],
+            ],
+            'Tools' => [
+                'highlighted' => false,
+                'skills' => ['Git', 'GitHub', 'Postman'],
+            ],
         ];
 
-        $order = 0;
-        foreach ($skills as $category => $names) {
-            foreach ($names as $name) {
+        $categoryOrder = 0;
+        foreach ($categories as $categoryName => $data) {
+            $category = SkillCategory::updateOrCreate(
+                ['name' => $categoryName],
+                ['order' => $categoryOrder++, 'highlighted' => $data['highlighted']],
+            );
+
+            foreach ($data['skills'] as $skillOrder => $skillName) {
                 Skill::updateOrCreate(
-                    ['name' => $name, 'category' => $category],
-                    ['order' => $order++],
+                    ['name' => $skillName, 'skill_category_id' => $category->id],
+                    ['order' => $skillOrder],
                 );
             }
         }

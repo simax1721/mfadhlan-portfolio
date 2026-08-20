@@ -18,16 +18,7 @@ class SkillResource extends Resource
 
     protected static ?string $navigationGroup = 'Portfolio';
 
-    protected static ?int $navigationSort = 2;
-
-    /** Keep in sync with the frontend's CATEGORY_ORDER in Skills.tsx. */
-    public const CATEGORIES = [
-        'AI-Assisted Development' => 'AI-Assisted Development',
-        'Backend' => 'Backend',
-        'Frontend' => 'Frontend',
-        'Database' => 'Database',
-        'Tools' => 'Tools',
-    ];
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -36,9 +27,19 @@ class SkillResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('category')
-                    ->options(self::CATEGORIES)
-                    ->required(),
+                Forms\Components\Select::make('skill_category_id')
+                    ->label('Category')
+                    ->relationship(
+                        name: 'category',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn ($query) => $query->orderBy('order'),
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')->required(),
+                    ]),
                 Forms\Components\TextInput::make('order')
                     ->numeric()
                     ->default(0)
@@ -53,12 +54,15 @@ class SkillResource extends Resource
             ->reorderable('order')
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('category')
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Category')
                     ->badge()
                     ->searchable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('category')->options(self::CATEGORIES),
+                Tables\Filters\SelectFilter::make('skill_category_id')
+                    ->label('Category')
+                    ->relationship('category', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
