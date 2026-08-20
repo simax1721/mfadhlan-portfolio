@@ -1,0 +1,11 @@
+# Each app manages its own build artifacts (see backend/.gitignore, frontend/.gitignore)
+
+# Separate GitHub repo (github.com/simax1721/simax1721), cloned here for
+# editing the GitHub profile README — not part of this project.
+simax1721/
+
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json

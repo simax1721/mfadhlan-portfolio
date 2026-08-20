@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --color-bg: #04070d;
+  --color-surface: #0a0f1a;
+  --color-surface-2: #0f1626;
+  --color-band: #070b14;
+  --color-border: #1c2536;
+  --color-text: #cbd5e1;
+  --color-text-dim: #7d8aa0;
+  --color-heading: #f1f5f9;
+  --color-accent: #22d3ee;
+  --color-accent-2: #3b82f6;
+  --color-amber: #f59e0b;
+
+  --shadow-card: none;
+  --shadow-card-hover: 0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent),
+    0 20px 40px -20px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+/* Light theme override — applied via <html data-theme="light">. Sits outside
+   Tailwind's generated @layer theme, so unlayered cascade wins without
+   needing !important. */
+:root[data-theme="light"] {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef2f9;
+  --color-band: #eff6ff;
+  --color-border: #e2e8f0;
+  --color-text: #334155;
+  --color-text-dim: #64748b;
+  --color-heading: #0f172a;
+  --color-accent: #0891b2;
+  --color-accent-2: #2563eb;
+  --color-amber: #f59e0b;
+
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 28px -10px rgba(15, 23, 42, 0.12);
+  --shadow-card-hover: 0 4px 6px rgba(15, 23, 42, 0.05), 0 24px 44px -14px rgba(15, 23, 42, 0.22);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  color: var(--color-heading);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Depth for card-like surfaces. Empty in dark mode (relies on the border
+   instead); a soft shadow in light mode where borders alone read flat. */
+.bg-surface {
+  /* !important: Tailwind's own reset initializes box-shadow to a
+     transparent ring/shadow stack on every element; without this our
+     card depth never shows through it. */
+  box-shadow: var(--shadow-card) !important;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease,
+    color 0.25s ease, background-color 0.25s ease;
+}
+
+/* Extra lift on hover, layered on top of .bg-surface's resting shadow. */
+.project-card:hover {
+  box-shadow: var(--shadow-card-hover) !important;
+}
+
+/* Faint technical dot-grid, used behind the Hero copy. Masked so it fades
+   toward the edges instead of hard-cutting, and never affects layout. */
+.dot-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--color-text-dim) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.18;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, black 40%, transparent 85%);
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, black 40%, transparent 85%);
+}
+
+/* Shared button styles so hover polish lives in one place. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-bg);
+  background-image: linear-gradient(to right, var(--color-accent), var(--color-accent-2));
+  /* !important here and below: see the note on .bg-surface above — Tailwind's
+     reset otherwise wins the cascade for box-shadow on every element. */
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--color-accent-2) 55%, transparent) !important;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background-color: var(--color-surface-2);
+  transform: translateY(-1px);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
