@@ -13,6 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Railway (and most PaaS) terminate TLS at their edge and forward
+        // requests to the container as plain HTTP. Without trusting that
+        // proxy, Laravel thinks every request is insecure and generates
+        // http:// asset/URL links even on an https:// site — which get
+        // blocked as mixed content by the browser.
+        $middleware->trustProxies(at: '*');
+
         $middleware->api(append: [
             \App\Http\Middleware\SetApiLocale::class,
         ]);
