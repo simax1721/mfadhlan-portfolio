@@ -61,10 +61,6 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-                // Managed MySQL 8 servers (e.g. Railway) default to the
-                // caching_sha2_password auth plugin, which needs the
-                // server's RSA public key to authenticate without SSL.
-                Mysql::ATTR_SERVER_PUBLIC_KEY => true,
             ]) : [],
         ],
 
