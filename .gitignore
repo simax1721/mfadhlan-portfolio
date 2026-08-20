@@ -9,3 +9,6 @@ Thumbs.db
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# Claude Code session-local runtime state, not project content
+.claude/scheduled_tasks.lock
