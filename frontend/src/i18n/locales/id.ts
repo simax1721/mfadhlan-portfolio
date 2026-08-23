@@ -9,11 +9,12 @@ export const id: typeof en = {
     education: "Pendidikan",
     contact: "Kontak",
     letsTalk: "Hubungi saya",
+    backToTop: "Kembali ke atas",
   },
   hero: {
     openToRemote: "Terbuka untuk Remote · {location}",
     greeting: "Hai, saya",
-    viewProjects: "Lihat Proyek",
+    viewProjects: "Lihat Proyek Unggulan",
     downloadCV: "Unduh CV",
     github: "GitHub ↗",
     linkedin: "LinkedIn ↗",
@@ -29,6 +30,8 @@ export const id: typeof en = {
   experience: {
     eyebrow: "Tempat saya bekerja",
     title: "Pengalaman Kerja",
+    showMore: "Tampilkan lebih banyak",
+    showLess: "Tampilkan lebih sedikit",
   },
   projects: {
     eyebrow: "Yang telah saya bangun",
@@ -38,6 +41,18 @@ export const id: typeof en = {
     source: "Sumber ↗",
     demoSoon: "Demo segera hadir",
     empty: "Proyek akan segera tampil di sini.",
+  },
+  featured: {
+    eyebrow: "Studi Kasus Unggulan",
+    challengeLabel: "Tantangan",
+    builtLabel: "Yang Saya Bangun",
+    resultLabel: "Hasil & Cakupan",
+    viewDemo: "Lihat Demo Live ↗",
+    viewSource: "Lihat Sumber ↗",
+    challengeText:
+      "Membangun platform streaming film berbasis sistem rental dari nol untuk production — mencakup pembayaran aman, akses konten berbatas waktu, dan laporan terpisah untuk mitra konten.",
+    resultText:
+      "Live di production di PT. ADOC Kreatif Sinema — 40+ endpoint REST API, skema database 25 tabel, pembayaran Midtrans nyata, dan creator portal khusus untuk laporan mitra konten.",
   },
   education: {
     eyebrow: "Latar belakang",

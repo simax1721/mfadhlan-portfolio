@@ -13,7 +13,13 @@ class Profile extends Model
 
     protected $fillable = [
         'name', 'role', 'tagline_id', 'tagline_en', 'summary_id', 'summary_en',
+        'highlights_id', 'highlights_en',
         'email', 'phone', 'location', 'github_url', 'linkedin_url', 'cv_file', 'photo',
+    ];
+
+    protected $casts = [
+        'highlights_id' => 'array',
+        'highlights_en' => 'array',
     ];
 
     protected $appends = ['cv_url', 'photo_url'];

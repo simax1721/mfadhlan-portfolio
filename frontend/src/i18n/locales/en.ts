@@ -7,11 +7,12 @@ export const en = {
     education: "Education",
     contact: "Contact",
     letsTalk: "Let's talk",
+    backToTop: "Back to top",
   },
   hero: {
     openToRemote: "Open to Remote Work · {location}",
     greeting: "Hi, I'm",
-    viewProjects: "View Projects",
+    viewProjects: "View Featured Project",
     downloadCV: "Download CV",
     github: "GitHub ↗",
     linkedin: "LinkedIn ↗",
@@ -27,6 +28,8 @@ export const en = {
   experience: {
     eyebrow: "Where I've worked",
     title: "Work Experience",
+    showMore: "Show more",
+    showLess: "Show less",
   },
   projects: {
     eyebrow: "What I've built",
@@ -36,6 +39,18 @@ export const en = {
     source: "Source ↗",
     demoSoon: "Demo coming soon",
     empty: "Projects will appear here soon.",
+  },
+  featured: {
+    eyebrow: "Featured Case Study",
+    challengeLabel: "The Challenge",
+    builtLabel: "What I Built",
+    resultLabel: "Result & Scope",
+    viewDemo: "View Live Demo ↗",
+    viewSource: "View Source ↗",
+    challengeText:
+      "Build a production-ready, rental-based film streaming platform from the ground up — covering secure payments, time-limited content access, and separate reporting for content partners.",
+    resultText:
+      "Live in production at PT. ADOC Kreatif Sinema — 40+ REST API endpoints, a 25-table relational schema, real Midtrans payments, and a dedicated creator portal for content-partner reporting.",
   },
   education: {
     eyebrow: "Background",
