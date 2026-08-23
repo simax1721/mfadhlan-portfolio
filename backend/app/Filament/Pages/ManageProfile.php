@@ -55,6 +55,10 @@ class ManageProfile extends Page implements HasForms
                                         Forms\Components\Textarea::make('summary_en')
                                             ->required()
                                             ->rows(5),
+                                        Forms\Components\TagsInput::make('highlights_en')
+                                            ->label('Evidence line (Hero proof-points)')
+                                            ->helperText('Short proof-points shown under the tagline, e.g. "40+ REST API endpoints".')
+                                            ->placeholder('Add a proof-point and press Enter'),
                                     ]),
                                 Forms\Components\Tabs\Tab::make('Indonesian')
                                     ->schema([
@@ -62,6 +66,10 @@ class ManageProfile extends Page implements HasForms
                                         Forms\Components\Textarea::make('summary_id')
                                             ->required()
                                             ->rows(5),
+                                        Forms\Components\TagsInput::make('highlights_id')
+                                            ->label('Evidence line (Hero proof-points)')
+                                            ->helperText('Short proof-points shown under the tagline, e.g. "40+ endpoint REST API".')
+                                            ->placeholder('Add a proof-point and press Enter'),
                                     ]),
                             ]),
                     ]),

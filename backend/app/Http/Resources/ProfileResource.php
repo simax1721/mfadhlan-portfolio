@@ -14,6 +14,7 @@ class ProfileResource extends JsonResource
             'role' => $this->role,
             'tagline' => $this->trans('tagline'),
             'summary' => $this->trans('summary'),
+            'highlights' => $this->trans('highlights') ?? [],
             'email' => $this->email,
             'phone' => $this->phone,
             'location' => $this->location,

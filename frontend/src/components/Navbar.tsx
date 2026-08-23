@@ -11,19 +11,29 @@ function githubHandle(githubUrl: string | null): string | null {
   return match?.[1] ?? null;
 }
 
+const SECTION_IDS = [
+  "about",
+  "skills",
+  "experience",
+  "projects",
+  "education",
+  "contact",
+];
+
 export function Navbar({ profile }: { profile: Profile }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const handle = githubHandle(profile.github_url) ?? profile.name;
 
   const LINKS = [
-    { href: "#about", label: t("nav.about") },
-    { href: "#skills", label: t("nav.skills") },
-    { href: "#experience", label: t("nav.experience") },
-    { href: "#projects", label: t("nav.projects") },
-    { href: "#education", label: t("nav.education") },
-    { href: "#contact", label: t("nav.contact") },
+    { href: "#about", id: "about", label: t("nav.about") },
+    { href: "#skills", id: "skills", label: t("nav.skills") },
+    { href: "#experience", id: "experience", label: t("nav.experience") },
+    { href: "#projects", id: "projects", label: t("nav.projects") },
+    { href: "#education", id: "education", label: t("nav.education") },
+    { href: "#contact", id: "contact", label: t("nav.contact") },
   ];
 
   useEffect(() => {
@@ -31,6 +41,37 @@ export function Navbar({ profile }: { profile: Profile }) {
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close the mobile menu on Escape, from anywhere on the page.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  // Scroll-spy: highlight whichever section is currently most in view.
+  useEffect(() => {
+    const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter(
+      (el): el is HTMLElement => el !== null,
+    );
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveId(visible.target.id);
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -45,7 +86,7 @@ export function Navbar({ profile }: { profile: Profile }) {
         <a
           href="#top"
           title={profile.name}
-          className="font-mono text-lg font-semibold text-heading"
+          className="rounded font-mono text-lg font-semibold text-heading"
         >
           {"<"}
           <span className="text-accent">{handle}</span>
@@ -57,7 +98,10 @@ export function Navbar({ profile }: { profile: Profile }) {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="text-sm text-text-dim transition-colors hover:text-accent"
+                aria-current={activeId === link.id ? "true" : undefined}
+                className={`rounded text-sm transition-colors hover:text-accent ${
+                  activeId === link.id ? "text-accent" : "text-text-dim"
+                }`}
               >
                 {link.label}
               </a>
@@ -76,9 +120,11 @@ export function Navbar({ profile }: { profile: Profile }) {
           </a>
 
           <button
-            className="text-heading md:hidden"
+            className="rounded text-heading md:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-label="Toggle menu"
+            aria-expanded={open}
+            aria-controls="mobile-nav-menu"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
@@ -93,13 +139,19 @@ export function Navbar({ profile }: { profile: Profile }) {
       </nav>
 
       {open && (
-        <ul className="flex flex-col gap-1 border-t border-border bg-bg px-6 py-4 md:hidden">
+        <ul
+          id="mobile-nav-menu"
+          className="flex flex-col gap-1 border-t border-border bg-bg px-6 py-4 md:hidden"
+        >
           {LINKS.map((link) => (
             <li key={link.href}>
               <a
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="block py-2 text-sm text-text-dim hover:text-accent"
+                aria-current={activeId === link.id ? "true" : undefined}
+                className={`block rounded py-2 text-sm hover:text-accent ${
+                  activeId === link.id ? "text-accent" : "text-text-dim"
+                }`}
               >
                 {link.label}
               </a>

@@ -10,7 +10,11 @@ class Skill extends Model
 {
     use InvalidatesPortfolioCache;
 
-    protected $fillable = ['name', 'skill_category_id', 'order'];
+    protected $fillable = ['name', 'skill_category_id', 'order', 'highlighted'];
+
+    protected $casts = [
+        'highlighted' => 'boolean',
+    ];
 
     public function category(): BelongsTo
     {
