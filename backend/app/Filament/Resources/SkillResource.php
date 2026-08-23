@@ -44,9 +44,6 @@ class SkillResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->required(),
-                Forms\Components\Toggle::make('highlighted')
-                    ->label('Core skill')
-                    ->helperText('Gives this skill a bit more visual emphasis in its category.'),
             ]);
     }
 
@@ -61,9 +58,6 @@ class SkillResource extends Resource
                     ->label('Category')
                     ->badge()
                     ->searchable(),
-                Tables\Columns\IconColumn::make('highlighted')
-                    ->label('Core')
-                    ->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('skill_category_id')

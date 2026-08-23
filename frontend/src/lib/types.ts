@@ -3,7 +3,6 @@ export interface Profile {
   role: string;
   tagline: string | null;
   summary: string;
-  highlights: string[];
   email: string;
   phone: string | null;
   location: string;
@@ -16,7 +15,6 @@ export interface Profile {
 export interface Skill {
   id: number;
   name: string;
-  highlighted: boolean;
 }
 
 export interface SkillCategory {

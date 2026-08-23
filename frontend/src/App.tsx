@@ -13,7 +13,6 @@ import { Projects } from "./components/Projects";
 import { EducationOrg } from "./components/EducationOrg";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
-import { BackToTop } from "./components/BackToTop";
 import { FullPageLoader, ErrorScreen } from "./components/StatusScreens";
 
 function App() {
@@ -44,7 +43,6 @@ function App() {
         <Contact profile={data.profile} />
       </main>
       <Footer profile={data.profile} />
-      <BackToTop />
     </div>
   );
 }

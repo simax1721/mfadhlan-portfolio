@@ -39,17 +39,6 @@ export function Hero({ profile }: { profile: Profile }) {
           {profile.tagline}
         </p>
 
-        {profile.highlights.length > 0 && (
-          <ul className="reveal mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 font-mono text-xs text-text-dim sm:text-sm">
-            {profile.highlights.map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="h-1 w-1 rounded-full bg-accent" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
-
         <div className="reveal mt-10 flex flex-wrap items-center justify-center gap-4">
           <a href="#projects" className="btn-primary">
             {t("hero.viewProjects")}
@@ -57,32 +46,27 @@ export function Hero({ profile }: { profile: Profile }) {
           <a href={api.cvUrl(locale)} className="btn-secondary">
             {t("hero.downloadCV")}
           </a>
+          {profile.github_url && (
+            <a
+              href={profile.github_url}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary"
+            >
+              {t("hero.github")}
+            </a>
+          )}
+          {profile.linkedin_url && (
+            <a
+              href={profile.linkedin_url}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary"
+            >
+              {t("hero.linkedin")}
+            </a>
+          )}
         </div>
-
-        {(profile.github_url || profile.linkedin_url) && (
-          <div className="reveal mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
-            {profile.github_url && (
-              <a
-                href={profile.github_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-text-dim transition-colors hover:text-accent"
-              >
-                {t("hero.github")}
-              </a>
-            )}
-            {profile.linkedin_url && (
-              <a
-                href={profile.linkedin_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-text-dim transition-colors hover:text-accent"
-              >
-                {t("hero.linkedin")}
-              </a>
-            )}
-          </div>
-        )}
       </div>
     </section>
   );

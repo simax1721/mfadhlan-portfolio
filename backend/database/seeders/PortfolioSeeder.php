@@ -28,10 +28,8 @@ class PortfolioSeeder extends Seeder
         Profile::updateOrCreate(['id' => 1], [
             'name' => 'M. Fadhlan',
             'role' => 'Backend / Fullstack Developer',
-            'tagline_en' => 'Laravel Backend Developer building payment-integrated rental and content platforms.',
-            'tagline_id' => 'Laravel Backend Developer yang membangun platform rental dan konten dengan integrasi payment.',
-            'highlights_en' => ['40+ REST API endpoints', 'Midtrans · OAuth · Dacast', 'Laravel · React · MySQL'],
-            'highlights_id' => ['40+ endpoint REST API', 'Midtrans · OAuth · Dacast', 'Laravel · React · MySQL'],
+            'tagline_en' => 'Building REST APIs, rental systems, and payment integrations for production web applications.',
+            'tagline_id' => 'Membangun REST API, sistem rental, dan integrasi payment untuk aplikasi web production.',
             'summary_en' => 'Backend / Fullstack Developer with experience building production web applications using Laravel, React.js, Node.js, and MySQL. Experienced in developing REST APIs, designing relational databases, integrating third-party services such as Midtrans, Google OAuth, and Dacast, and building admin dashboards. Alongside working as a Software Engineer, also has experience building web applications as a freelance developer for organizations and small businesses.',
             'summary_id' => 'Backend / Fullstack Developer dengan pengalaman membangun aplikasi web production menggunakan Laravel, React.js, Node.js, dan MySQL. Berpengalaman mengembangkan REST API, merancang database relasional, mengintegrasikan layanan pihak ketiga seperti Midtrans, Google OAuth, dan Dacast, serta membangun dashboard administrasi. Selain bekerja sebagai Software Engineer, juga memiliki pengalaman mengembangkan aplikasi web sebagai freelance developer untuk kebutuhan organisasi dan UMKM.',
             'email' => 'mfadhlan1721@gmail.com',
@@ -44,16 +42,14 @@ class PortfolioSeeder extends Seeder
 
     private function seedSkills(): void
     {
-        $coreSkills = ['Laravel', 'React.js', 'MySQL', 'REST API', 'Authentication (Sanctum, OAuth)', 'Midtrans'];
-
         $categories = [
-            'Engineering Workflow' => [
+            'AI-Assisted Development' => [
                 'highlighted' => true,
                 'skills' => ['Vibe Coding', 'Claude Code', 'Codex'],
             ],
             'Backend' => [
                 'highlighted' => false,
-                'skills' => ['Laravel', 'PHP', 'Node.js', 'REST API', 'Authentication (Sanctum, OAuth)', 'Midtrans'],
+                'skills' => ['Laravel', 'PHP', 'Node.js', 'REST API', 'Authentication (Sanctum, OAuth)'],
             ],
             'Frontend' => [
                 'highlighted' => false,
@@ -79,7 +75,7 @@ class PortfolioSeeder extends Seeder
             foreach ($data['skills'] as $skillOrder => $skillName) {
                 Skill::updateOrCreate(
                     ['name' => $skillName, 'skill_category_id' => $category->id],
-                    ['order' => $skillOrder, 'highlighted' => in_array($skillName, $coreSkills, true)],
+                    ['order' => $skillOrder],
                 );
             }
         }

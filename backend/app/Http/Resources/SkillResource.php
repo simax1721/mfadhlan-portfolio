@@ -12,7 +12,6 @@ class SkillResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'highlighted' => (bool) $this->highlighted,
         ];
     }
 }

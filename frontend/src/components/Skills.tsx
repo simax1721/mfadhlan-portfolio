@@ -46,11 +46,7 @@ export function Skills({
                   {category.skills.map((skill) => (
                     <li
                       key={skill.id}
-                      className={`rounded-full px-3 py-1 text-sm ${
-                        skill.highlighted
-                          ? "bg-accent/15 font-medium text-accent"
-                          : "bg-surface-2 text-text"
-                      }`}
+                      className="rounded-full bg-surface-2 px-3 py-1 text-sm text-text"
                     >
                       {skill.name}
                     </li>
