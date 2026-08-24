@@ -1,8 +1,14 @@
 import { useCallback } from "react";
 import { api } from "./lib/api";
+import { withMinDelay } from "./lib/minDelay";
 import { useFetch } from "./hooks/useFetch";
 import { useReveal } from "./hooks/useReveal";
 import { useLocale } from "./i18n/useLocale";
+
+// Only in production — dev already runs against an uncached backend, so
+// the loader never resolves fast enough for this to matter there, and
+// there's no reason to slow down local iteration.
+const LOADER_MIN_MS = 1200;
 
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -18,7 +24,12 @@ import { FullPageLoader, ErrorScreen } from "./components/StatusScreens";
 
 function App() {
   const { locale, t } = useLocale();
-  const fetchBootstrap = useCallback(() => api.getBootstrap(locale), [locale]);
+  const fetchBootstrap = useCallback(() => {
+    const request = api.getBootstrap(locale);
+    return import.meta.env.PROD
+      ? withMinDelay(request, LOADER_MIN_MS)
+      : request;
+  }, [locale]);
   const { data, loading, error } = useFetch(fetchBootstrap);
 
   const containerRef = useReveal<HTMLDivElement>([loading]);

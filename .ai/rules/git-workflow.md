@@ -13,3 +13,10 @@
   change) — that's a separate, narrower instruction than the push rule
   above; follow whichever the user most recently stated for the current
   task.
+- **Update relevant documentation before committing, not after.** Standing
+  instruction from the user (2026-08-25). For homepage/redesign work that
+  means `.ai/redesign/plan.md` (add/update the round's row(s) — see its own
+  header for format); for anything else (backend fixes, infra changes,
+  tooling) that means `CHANGELOG.md`. Both should already reflect the
+  change by the time it's committed, not patched in as an afterthought or a
+  separate later commit.

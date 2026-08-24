@@ -8,13 +8,17 @@ stays a record of what changed and why.
 this redesign pass is still open-ended — it has been proceeding one
 user-directed round at a time (Hero feel → icons → loading screen →
 animation polish → mobile nav/spacing → section backgrounds → background
-simplification/bug fixes → featured project restructure), each started
-by a new instruction from Fadhlan (the user), not from a fixed backlog.
-Expect more rounds like this; don't treat the absence of new open items
-below as "redesign complete" — check with Fadhlan before assuming so.
+simplification/bug fixes → featured project restructure → loader min-delay),
+each started by a new instruction from Fadhlan (the user), not from a
+fixed backlog. Expect more rounds like this; don't treat the absence of
+new open items below as "redesign complete" — check with Fadhlan before
+assuming so.
 
-**Process note:** per user instruction, no `git push` during this redesign —
-commit locally as work lands, push only when explicitly asked.
+**Process note:** commit/push and doc-update-before-commit rules live in
+[.ai/rules/git-workflow.md](../rules/git-workflow.md) — push is not a
+standing "never", it happens on explicit request (it already has, mid-redesign:
+2026-08-24/25 pushed everything accumulated to that point, after a Railway
+Volume was attached for persistent uploads).
 
 ## Hero "feels flat" pass (2026-08-24)
 
@@ -151,8 +155,8 @@ review, tracked separately.
 
 | # | Finding | Priority | File(s) | Status |
 |---|---------|----------|---------|--------|
-| P1 | All 4 projects have `image_url: null` — every card (incl. the Featured Case Study) shows a random unrelated picsum.photos stock photo | 🔴 Highest-impact | data (`projects.image_url`) | **Done (local)** — Aceh Cinema & Amanah Aceh use real screenshots of their live sites (cropped 16:9, user captured + ffmpeg crop). HydroSmart IoT & Berkah Bibit use branded SVG placeholders (dark/cyan theme, honest "Preview coming soon" tag) since they have no live demo. All 4 uploaded via Filament, verified live at localhost:5173. **Not yet applied to production.** |
-| P2 | Skill category order led with "Engineering Workflow" (AI tooling) ahead of "Backend" — undercut the site's own positioning | 🟠 High | `PortfolioSeeder.php`, new migration `2026_08_24_090000_reorder_skill_categories_backend_first.php` | Done — reordered Backend→Frontend→Database→Tools→Engineering Workflow, verified locally, **not yet applied to production** (needs `railway ssh` migrate or wait for next deploy) |
+| P1 | All 4 projects have `image_url: null` — every card (incl. the Featured Case Study) shows a random unrelated picsum.photos stock photo | 🔴 Highest-impact | data (`projects.image_url`) | **Done, live in production** — Aceh Cinema & Amanah Aceh use real screenshots of their live sites (cropped 16:9, user captured + ffmpeg crop). HydroSmart IoT & Berkah Bibit use branded SVG placeholders (dark/cyan theme, honest "Preview coming soon" tag) since they have no live demo. Re-uploaded via the production Filament admin on 2026-08-25 (the local-only upload from when this row was first written didn't carry over — Filament uploads are DB/storage content, not something `git push` moves), verified via `/api/bootstrap` returning real `image_url`s for all 4 |
+| P2 | Skill category order led with "Engineering Workflow" (AI tooling) ahead of "Backend" — undercut the site's own positioning | 🟠 High | `PortfolioSeeder.php`, new migration `2026_08_24_090000_reorder_skill_categories_backend_first.php` | **Done, live in production** — reordered Backend→Frontend→Database→Tools→Engineering Workflow; the migration shipped in the 2026-08-25 push and ran automatically via `railway.json`'s `migrate --force` on deploy, verified via `/api/bootstrap` returning "Backend" first |
 | P3 | Section order puts Projects (strongest proof-of-work) after Hero→About→Skills→Experience, later than the `portfolio-grid` pattern's Hero→Projects→About | 🟡 Discuss | `App.tsx`, `Navbar.tsx` (section + nav order) | Done — discussed 3 options (full reorder / partial / leave as-is), chose partial: Hero→About→**Projects**→Skills→Experience→Education→Contact. Nav links + scroll-spy `SECTION_IDS` reordered to match. Verified locally (lint, build, live render, nav order) |
 
 ## Background simplification & visibility bugs (2026-08-24)
@@ -183,13 +187,24 @@ inconsistent even when no single section looks wrong in isolation.
 | F2 | Restructured `FeaturedProject` from a 2-column grid (image left, text right on `md:`+) to one stacked column at every breakpoint (image full-width on top, text below) matching the plain `ProjectCard` pattern, sized up (bigger title, more padding) to still read as the featured one — user expected it to match the other cards' layout, not a bespoke split | `FeaturedProject.tsx` | Done — verified 1200px and 375px |
 | F3 | Added "show more" progressive disclosure to the project grid (6 shown by default, button reveals the rest) ahead of an anticipated ~10 projects — considered and rejected a carousel: carousels have well-documented low interaction rates, so anything past the first slide effectively goes unseen, a bad trade for a portfolio. Reuses the same pattern `Experience` already uses for its bullets | `Projects.tsx`, `i18n/locales/{en,id}.ts` (`projects.showMore/showLess`) | Done — verified by temporarily lowering the threshold to 2, clicking through expand/collapse, then restoring it to 6; no button shows with the current 3 non-featured projects |
 
+## Loading-screen min-delay (2026-08-25)
+
+User noticed on the live site (fast, cache-hit `/api/bootstrap`) that the
+loader's terminal typewriter got cut off mid-line before finishing —
+doesn't happen locally against an uncached `php artisan serve`, where the
+request is naturally slower than the animation.
+
+| # | Change | File(s) | Status |
+|---|--------|---------|--------|
+| L1 | Added `withMinDelay()`, wrapping the bootstrap fetch so the loader shows for at least 1200ms regardless of how fast the request resolves — applied only when `import.meta.env.PROD` is true (Vite's build-time flag), so `npm run dev` is completely unaffected | `lib/minDelay.ts` (new), `App.tsx` | Done — lint + `tsc -b` clean, `withMinDelay` timing verified in isolation (a 50ms promise took ~1200ms total; a 1500ms promise was *not* further delayed, stayed ~1500ms), dev server rechecked to confirm no behavior change there |
+
 ## Suggested order
 
 1. ~~Items 1–2 (Critical, accessibility) — small, isolated, low-risk changes.~~ Done.
 2. ~~Item 3 (High, font loading) — see [decisions.md](decisions.md).~~ Done.
 3. ~~Items 4–5 (Medium) — quick token/spacing tweaks.~~ Done.
 4. ~~Item 6 (Minor) — icon stroke-width consistency.~~ Done.
-5. Item 7 — stays blocked until P0 (real project screenshots) is picked up.
+5. ~~Item 7 — was blocked on P0/P1 (real project screenshots).~~ Done — see P1 above, live in production as of 2026-08-25.
 
 ## Verification per item
 

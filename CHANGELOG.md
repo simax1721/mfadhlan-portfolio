@@ -99,16 +99,50 @@ Worked through `frontend/FRONTEND_IMPROVEMENT_PLAN.md`'s P1–P3 backlog
   a "show more" toggle to the project grid ahead of more projects being
   added later. Full detail in `.ai/redesign/plan.md`.
 
+## 2026-08-25 — Persistent uploads, first push since the redesign, loader timing
+
+- **Infra fix — profile/project photo uploads were being wiped on every
+  Railway deploy:** Railway service containers are ephemeral (a fresh
+  filesystem on each deploy), and the `mfadhlan-portfolio` backend service
+  had no persistent volume — only the Postgres database did. Any file
+  uploaded at runtime via Filament (`storage/app/public/...`) lived only on
+  that deploy's container and vanished on the next one. Fixed by attaching
+  a Railway Volume (`mfadhlan-portfolio-volume`, 500MB) mounted at
+  `/app/storage/app/public` (confirmed via `railway ssh` — real `ext4`
+  mount, writable). Uploads made after this point persist across deploys;
+  anything uploaded before it (the profile photo, and the P1 project
+  images below) had to be re-uploaded once.
+- Re-uploaded the profile photo and all 4 project images via the
+  production Filament admin — both had been wiped by the issue above
+  before the volume existed. This also means `.ai/redesign/plan.md`'s P1
+  (real project screenshots) and P2 (skill-category order, via its
+  migration) are now genuinely live in production, not just local —
+  their rows were stale until this entry.
+- **First `git push` since the redesign pass began** (2026-08-24 pass
+  through this entry, 7 commits): background simplification + bug fixes,
+  the CV PDF JSON-leak fix, the Featured Project rework, and this entry's
+  volume/upload fixes. Verified live post-deploy: profile photo loads,
+  CV PDF's Technical Skills section shows real category names (checked via
+  `pdftotext` against the production PDF — zero JSON-shaped matches).
+- Loading screen's terminal typewriter was getting cut off mid-line on the
+  live site — `/api/bootstrap` now resolves fast enough (cache hit) to
+  beat the animation, which doesn't happen locally against an uncached
+  `php artisan serve`. Added a 1200ms minimum display time for the loader,
+  gated to production builds only (`import.meta.env.PROD`) so local dev
+  stays instant.
+
 ## Status as of this entry
 
 Redesign is ongoing, not finished — full detail in `.ai/redesign/plan.md`.
 Completed so far: the original 7-item review, positioning fixes (real
 project images, skill-category order, section order), Hero visual pass
 (terminal mockup, typewriter, icons extended to Contact/Footer), the
-loading screen restyle, animation polish (stagger, BackToTop/mobile-menu
-transitions), a mobile nav-scroll + spacing fix, section backgrounds and
-their later simplification/bug-fix pass, and a Featured Project layout
-rework. Each round has been started by a new instruction from Fadhlan (the
-user) rather than a fixed backlog — expect more. Per explicit user
-instruction, work is being committed locally only — no `git push` until
-asked.
+loading screen restyle and later min-delay fix, animation polish (stagger,
+BackToTop/mobile-menu transitions), a mobile nav-scroll + spacing fix,
+section backgrounds and their later simplification/bug-fix pass, a
+Featured Project layout rework, and a persistent-storage fix for Railway
+uploads. Each round has been started by a new instruction from Fadhlan
+(the user) rather than a fixed backlog — expect more. Work is committed
+locally as it lands and pushed only on Fadhlan's explicit go-ahead each
+time (see `.ai/rules/git-workflow.md`) — that's happened once so far
+(2026-08-25), not on a fixed schedule.
