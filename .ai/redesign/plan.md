@@ -7,7 +7,8 @@ stays a record of what changed and why.
 **Status: not finished.** Every item logged below is done and verified, but
 this redesign pass is still open-ended — it has been proceeding one
 user-directed round at a time (Hero feel → icons → loading screen →
-animation polish → mobile nav/spacing → section backgrounds), each started
+animation polish → mobile nav/spacing → section backgrounds → background
+simplification/bug fixes → featured project restructure), each started
 by a new instruction from Fadhlan (the user), not from a fixed backlog.
 Expect more rounds like this; don't treat the absence of new open items
 below as "redesign complete" — check with Fadhlan before assuming so.
@@ -153,6 +154,34 @@ review, tracked separately.
 | P1 | All 4 projects have `image_url: null` — every card (incl. the Featured Case Study) shows a random unrelated picsum.photos stock photo | 🔴 Highest-impact | data (`projects.image_url`) | **Done (local)** — Aceh Cinema & Amanah Aceh use real screenshots of their live sites (cropped 16:9, user captured + ffmpeg crop). HydroSmart IoT & Berkah Bibit use branded SVG placeholders (dark/cyan theme, honest "Preview coming soon" tag) since they have no live demo. All 4 uploaded via Filament, verified live at localhost:5173. **Not yet applied to production.** |
 | P2 | Skill category order led with "Engineering Workflow" (AI tooling) ahead of "Backend" — undercut the site's own positioning | 🟠 High | `PortfolioSeeder.php`, new migration `2026_08_24_090000_reorder_skill_categories_backend_first.php` | Done — reordered Backend→Frontend→Database→Tools→Engineering Workflow, verified locally, **not yet applied to production** (needs `railway ssh` migrate or wait for next deploy) |
 | P3 | Section order puts Projects (strongest proof-of-work) after Hero→About→Skills→Experience, later than the `portfolio-grid` pattern's Hero→Projects→About | 🟡 Discuss | `App.tsx`, `Navbar.tsx` (section + nav order) | Done — discussed 3 options (full reorder / partial / leave as-is), chose partial: Hero→About→**Projects**→Skills→Experience→Education→Contact. Nav links + scroll-spy `SECTION_IDS` reordered to match. Verified locally (lint, build, live render, nav order) |
+
+## Background simplification & visibility bugs (2026-08-24)
+
+User, as a recruiter, called the per-section backgrounds "not smooth" —
+investigation traced it to the B1–B5 pass above having grown into 6
+different dot-grid/blob configurations across 7 sections (independently
+flipped dots vs. blobs, per section). Rather than adding a 7th variant,
+simplified back down.
+
+| # | Change | File(s) | Status |
+|---|--------|---------|--------|
+| S1 | Dropped the per-section `flip`/`dots` props entirely. `SectionBackground` is one fixed look now, applied only to Hero/Projects/Experience (every other section), so no two textured sections are ever adjacent and the seam problem this was solving doesn't arise in the first place | `SectionBackground.tsx`, `About.tsx`, `EducationOrg.tsx` | Done — verified 0 `.dot-grid` in About/Education, 1 in Projects/Experience |
+| S2 | Fixed blobs rendering as a hard-edged wall instead of a soft glow on wide viewports — offsets were in `%`, which scales with section width while the blob's fixed px diameter doesn't, so on wide screens the blob's center sat too far inside the visible area (still fully opaque) before `overflow-hidden` clipped it. Switched to fixed px offsets sized to `radius ± blur radius` | `SectionBackground.tsx` | Done — verified at 1440px, no hard edge at either blob |
+| S3 | Nudged the top-left blob down (`top-[5%]` → `top-[18%]`) — its curve was intersecting the section heading and reading as a panel cut | `SectionBackground.tsx` | Done |
+| S4 | `FullPageLoader`'s dot-grid + glow were configured but never actually visible — same `isolate`-missing bug as B4 above, just in a component B4's audit didn't cover. Added `isolate` to its wrapper | `StatusScreens.tsx` | Done — verified live (caught the loader mid-render) and via computed `isolation: isolate` |
+
+**Takeaway:** per earlier rounds' "over-animating a resume-style site
+feels gimmicky" principle, prefer *fewer* background variants applied
+consistently over a bespoke per-section recipe — the latter reads as
+inconsistent even when no single section looks wrong in isolation.
+
+## Featured project restructure & project list scaling (2026-08-24)
+
+| # | Change | File(s) | Status |
+|---|--------|---------|--------|
+| F1 | `FeaturedProject`'s image was cropped hard on desktop — its 2-column grid stretched the image cell to match the (much taller) text column's height, and `object-cover` filled that by cropping. Switched `object-cover` → `object-contain` (+ `bg-surface-2` fill) so the full image always shows regardless of source aspect ratio — also means a future 9:16 upload won't crop either, just letterbox | `FeaturedProject.tsx` | Done — verified Aceh Cinema's logo/tagline, previously cut off, now fully visible at 1200px and 375px |
+| F2 | Restructured `FeaturedProject` from a 2-column grid (image left, text right on `md:`+) to one stacked column at every breakpoint (image full-width on top, text below) matching the plain `ProjectCard` pattern, sized up (bigger title, more padding) to still read as the featured one — user expected it to match the other cards' layout, not a bespoke split | `FeaturedProject.tsx` | Done — verified 1200px and 375px |
+| F3 | Added "show more" progressive disclosure to the project grid (6 shown by default, button reveals the rest) ahead of an anticipated ~10 projects — considered and rejected a carousel: carousels have well-documented low interaction rates, so anything past the first slide effectively goes unseen, a bad trade for a portfolio. Reuses the same pattern `Experience` already uses for its bullets | `Projects.tsx`, `i18n/locales/{en,id}.ts` (`projects.showMore/showLess`) | Done — verified by temporarily lowering the threshold to 2, clicking through expand/collapse, then restoring it to 6; no button shows with the current 3 non-featured projects |
 
 ## Suggested order
 

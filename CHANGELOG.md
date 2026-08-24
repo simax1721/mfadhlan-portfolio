@@ -80,6 +80,24 @@ Worked through `frontend/FRONTEND_IMPROVEMENT_PLAN.md`'s P1–P3 backlog
   sessions) and `.ai/rules/` (durable, area-scoped technical rules:
   bilingual content, cache invalidation, deploy gotchas, frontend styling,
   git workflow).
+- **Critical bug fix — CV PDF Technical Skills section rendered raw JSON:**
+  `CvController` grouped `Skill::get()` by `'category'`, but `category()`
+  is a `belongsTo` relation to `SkillCategory`, not a string column; used
+  as a `groupBy` array key it got stringified via Eloquent's `__toString()`
+  (which returns `toJson()`), so every category heading in the downloaded
+  CV showed the category's raw JSON instead of its name. Fixed by querying
+  `SkillCategory::with('skills')` instead, matching the pattern
+  `BootstrapController` already used correctly for the live site.
+- Simplified the section-background pass from `.ai/redesign/plan.md`'s
+  B1–B5 (which had grown into 6 different per-section dot-grid/blob
+  configurations) down to one fixed look on alternating sections; fixed a
+  blob-positioning bug that rendered as a hard-edged wall instead of a
+  soft glow on wide viewports, and a second missing-`isolate` visibility
+  bug (same root cause as B4, in the loading screen this time). Restructured
+  `FeaturedProject` from a 2-column grid to a stacked layout matching the
+  other project cards (its old layout stretch-cropped the image), and added
+  a "show more" toggle to the project grid ahead of more projects being
+  added later. Full detail in `.ai/redesign/plan.md`.
 
 ## Status as of this entry
 
@@ -88,9 +106,9 @@ Completed so far: the original 7-item review, positioning fixes (real
 project images, skill-category order, section order), Hero visual pass
 (terminal mockup, typewriter, icons extended to Contact/Footer), the
 loading screen restyle, animation polish (stagger, BackToTop/mobile-menu
-transitions), a mobile nav-scroll + spacing fix, and section backgrounds
-(dot-grid/blobs on Hero/About/Projects, plus a real stacking-context bug
-found and fixed along the way). Each round has been started by a new
-instruction from Fadhlan (the user) rather than a fixed backlog — expect
-more. Per explicit user instruction, work is being committed locally only
-— no `git push` until asked.
+transitions), a mobile nav-scroll + spacing fix, section backgrounds and
+their later simplification/bug-fix pass, and a Featured Project layout
+rework. Each round has been started by a new instruction from Fadhlan (the
+user) rather than a fixed backlog — expect more. Per explicit user
+instruction, work is being committed locally only — no `git push` until
+asked.
