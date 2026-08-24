@@ -12,13 +12,17 @@ export function BackToTop() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (!visible) return null;
-
   return (
     <a
       href="#top"
       aria-label={t("nav.backToTop")}
-      className="fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface text-text-dim shadow-sm transition-colors hover:text-accent"
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
+      className={`fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface text-text-dim shadow-sm transition-all duration-300 hover:text-accent ${
+        visible
+          ? "translate-y-0 opacity-100"
+          : "pointer-events-none translate-y-2 opacity-0"
+      }`}
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path

@@ -45,6 +45,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Offsets anchor-scroll targets so the sticky navbar doesn't cover the
+   section heading right after it (nav height is ~74px on mobile, a bit
+   less than that on desktop — one value with margin to spare covers both). */
+section[id] {
+  scroll-margin-top: 88px;
+}
+
 /* Visible keyboard focus ring everywhere, but only for keyboard users
    (not on mouse click), matching the site's cyan accent. */
 a:focus-visible,
@@ -98,12 +105,46 @@ body {
      card depth never shows through it. */
   box-shadow: var(--shadow-card) !important;
   transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease,
-    color 0.25s ease, background-color 0.25s ease;
+    color 0.25s ease, background-color 0.25s ease, opacity 0.25s ease;
 }
 
 /* Extra lift on hover, layered on top of .bg-surface's resting shadow. */
 .project-card:hover {
   box-shadow: var(--shadow-card-hover) !important;
+}
+
+/* Slow-drifting blurred blobs — cheap CSS-only alternative to a WebGL
+   background (no new dependency, ~0 runtime cost). Frozen in place by the
+   prefers-reduced-motion override below (that block already zeroes out
+   every animation-duration on the page). */
+@keyframes float-blob-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -40px) scale(1.08);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+}
+
+@keyframes float-blob-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-35px, 30px) scale(1.1);
+  }
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
 }
 
 /* Faint technical dot-grid, used behind the Hero copy. Masked so it fades

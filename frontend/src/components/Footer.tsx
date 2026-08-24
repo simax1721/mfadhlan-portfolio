@@ -1,5 +1,6 @@
 import type { Profile } from "../lib/types";
 import { useLocale } from "../i18n/useLocale";
+import { GitHubIcon, LinkedInIcon } from "./icons";
 
 export function Footer({ profile }: { profile: Profile }) {
   const { t } = useLocale();
@@ -16,9 +17,10 @@ export function Footer({ profile }: { profile: Profile }) {
               href={profile.github_url}
               target="_blank"
               rel="noreferrer"
-              className="transition-colors hover:text-accent"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-accent"
             >
-              {profile.github_url.replace("https://", "")}
+              <GitHubIcon size={14} />
+              {t("contact.github")}
             </a>
           )}
           {profile.linkedin_url && (
@@ -26,9 +28,10 @@ export function Footer({ profile }: { profile: Profile }) {
               href={profile.linkedin_url}
               target="_blank"
               rel="noreferrer"
-              className="transition-colors hover:text-accent"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-accent"
             >
-              LinkedIn
+              <LinkedInIcon size={14} />
+              {t("contact.linkedin")}
             </a>
           )}
         </div>

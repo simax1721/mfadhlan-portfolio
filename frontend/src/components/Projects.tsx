@@ -4,12 +4,17 @@ import { SectionHeading } from "./SectionHeading";
 import { useLocale } from "../i18n/useLocale";
 import { temporaryProjectImage } from "../lib/projectImage";
 import { FeaturedProject } from "./FeaturedProject";
+import { revealDelay } from "../lib/reveal";
+import { SectionBackground } from "./SectionBackground";
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const { t } = useLocale();
 
   return (
-    <article className="project-card reveal group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-1 hover:border-accent/50">
+    <article
+      style={revealDelay(index)}
+      className="project-card reveal group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-1 hover:border-accent/50"
+    >
       <div className="relative flex aspect-video items-center justify-center overflow-hidden border-b border-border bg-surface-2">
         <img
           src={project.image_url ?? temporaryProjectImage(project)}
@@ -93,38 +98,44 @@ export function Projects({
     : projects;
 
   return (
-    <section id="projects" className="mx-auto max-w-6xl px-6 py-24">
-      <SectionHeading
-        eyebrow={t("projects.eyebrow")}
-        title={t("projects.title")}
-      />
+    <section
+      id="projects"
+      className="relative isolate overflow-hidden px-6 py-16 sm:py-20 md:py-24"
+    >
+      <SectionBackground />
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading
+          eyebrow={t("projects.eyebrow")}
+          title={t("projects.title")}
+        />
 
-      {loading ? (
-        <>
-          <div className="mb-12 h-96 animate-pulse rounded-2xl border border-border bg-surface" />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-96 animate-pulse rounded-2xl border border-border bg-surface"
-              />
-            ))}
-          </div>
-        </>
-      ) : projects.length === 0 ? (
-        <p className="text-center text-text-dim">{t("projects.empty")}</p>
-      ) : (
-        <>
-          {featuredProject && <FeaturedProject project={featuredProject} />}
-          {restProjects.length > 0 && (
+        {loading ? (
+          <>
+            <div className="mb-12 h-96 animate-pulse rounded-2xl border border-border bg-surface" />
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {restProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-96 animate-pulse rounded-2xl border border-border bg-surface"
+                />
               ))}
             </div>
-          )}
-        </>
-      )}
+          </>
+        ) : projects.length === 0 ? (
+          <p className="text-center text-text-dim">{t("projects.empty")}</p>
+        ) : (
+          <>
+            {featuredProject && <FeaturedProject project={featuredProject} />}
+            {restProjects.length > 0 && (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {restProjects.map((project, i) => (
+                  <ProjectCard key={project.id} project={project} index={i} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import type { SkillCategory } from "../lib/types";
 import { SectionHeading } from "./SectionHeading";
 import { useLocale } from "../i18n/useLocale";
+import { revealDelay } from "../lib/reveal";
 
 export function Skills({
   skills,
@@ -12,7 +13,7 @@ export function Skills({
   const { t } = useLocale();
 
   return (
-    <section id="skills" className="bg-band px-6 py-24">
+    <section id="skills" className="bg-band px-6 py-16 sm:py-20 md:py-24">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow={t("skills.eyebrow")}
@@ -30,9 +31,10 @@ export function Skills({
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-            {skills.map((category) => (
+            {skills.map((category, i) => (
               <div
                 key={category.id}
+                style={revealDelay(i)}
                 className={`reveal rounded-2xl border p-6 ${
                   category.highlighted
                     ? "border-accent/40 bg-accent/5"

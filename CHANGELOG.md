@@ -83,6 +83,14 @@ Worked through `frontend/FRONTEND_IMPROVEMENT_PLAN.md`'s P1–P3 backlog
 
 ## Status as of this entry
 
-Redesign fixes from `.ai/redesign/plan.md` are not yet applied (all rows
-`Pending`). Per explicit user instruction, work is being committed locally
-only — no `git push` until asked.
+Redesign is ongoing, not finished — full detail in `.ai/redesign/plan.md`.
+Completed so far: the original 7-item review, positioning fixes (real
+project images, skill-category order, section order), Hero visual pass
+(terminal mockup, typewriter, icons extended to Contact/Footer), the
+loading screen restyle, animation polish (stagger, BackToTop/mobile-menu
+transitions), a mobile nav-scroll + spacing fix, and section backgrounds
+(dot-grid/blobs on Hero/About/Projects, plus a real stacking-context bug
+found and fixed along the way). Each round has been started by a new
+instruction from Fadhlan (the user) rather than a fixed backlog — expect
+more. Per explicit user instruction, work is being committed locally only
+— no `git push` until asked.

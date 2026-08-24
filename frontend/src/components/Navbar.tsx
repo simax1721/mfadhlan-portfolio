@@ -20,12 +20,29 @@ const SECTION_IDS = [
   "contact",
 ];
 
+// Matches the mobile menu's `duration-300` collapse transition — the
+// scroll target is only computed correctly once the menu has fully
+// closed, otherwise the page height changes mid-scroll and the anchor
+// lands in the wrong place.
+const MOBILE_MENU_CLOSE_MS = 320;
+
 export function Navbar({ profile }: { profile: Profile }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const handle = githubHandle(profile.github_url) ?? profile.name;
+
+  // Close the mobile menu first, then scroll — scrolling while the menu is
+  // still collapsing races the browser's own anchor-scroll against the
+  // shrinking page height and overshoots the target.
+  const goToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setOpen(false);
+    window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, MOBILE_MENU_CLOSE_MS);
+  };
 
   const LINKS = [
     { href: "#about", id: "about", label: t("nav.about") },
@@ -86,11 +103,9 @@ export function Navbar({ profile }: { profile: Profile }) {
         <a
           href="#top"
           title={profile.name}
-          className="rounded font-mono text-lg font-semibold text-heading"
+          className="rounded font-mono text-lg font-semibold text-accent"
         >
-          {"<"}
-          <span className="text-accent">{handle}</span>
-          {" />"}
+          {handle}
         </a>
 
         <ul className="hidden items-center gap-8 md:flex">
@@ -114,7 +129,7 @@ export function Navbar({ profile }: { profile: Profile }) {
           <ThemeToggle />
           <a
             href="#contact"
-            className="hidden rounded-full border border-accent/40 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/10 md:inline-block"
+            className="hidden rounded-full border border-accent/40 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/10 lg:inline-block"
           >
             {t("nav.letsTalk")}
           </a>
@@ -138,27 +153,30 @@ export function Navbar({ profile }: { profile: Profile }) {
         </div>
       </nav>
 
-      {open && (
-        <ul
-          id="mobile-nav-menu"
-          className="flex flex-col gap-1 border-t border-border bg-bg px-6 py-4 md:hidden"
-        >
-          {LINKS.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                onClick={() => setOpen(false)}
-                aria-current={activeId === link.id ? "true" : undefined}
-                className={`block rounded py-2 text-sm hover:text-accent ${
-                  activeId === link.id ? "text-accent" : "text-text-dim"
-                }`}
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul
+        id="mobile-nav-menu"
+        inert={!open}
+        className={`flex flex-col gap-1 overflow-hidden border-t bg-bg px-6 transition-all duration-300 md:hidden ${
+          open
+            ? "max-h-96 border-border py-4 opacity-100"
+            : "max-h-0 border-transparent py-0 opacity-0"
+        }`}
+      >
+        {LINKS.map((link) => (
+          <li key={link.href}>
+            <a
+              href={link.href}
+              onClick={(e) => goToSection(e, link.id)}
+              aria-current={activeId === link.id ? "true" : undefined}
+              className={`block rounded py-2 text-sm hover:text-accent ${
+                activeId === link.id ? "text-accent" : "text-text-dim"
+              }`}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
     </header>
   );
 }

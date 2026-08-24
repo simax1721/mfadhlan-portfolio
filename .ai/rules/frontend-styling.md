@@ -23,3 +23,15 @@
   provider file doesn't also export a hook — keeps the
   `react(only-export-components)` Fast Refresh lint rule happy. Follow the
   same split for any new context.
+- **`-z-10` decorative backgrounds need `isolate` on their positioned
+  ancestor, or they render invisible:** `App.tsx`'s root wrapper
+  (`<div className="min-h-screen bg-bg">`) is a plain `position: static`
+  box with a solid background, and `position: relative` alone (no explicit
+  `z-index`) does **not** create a stacking context. Without an isolating
+  ancestor, a `z-index: -10` decorative element (dot-grid, glow, blobs — see
+  `SectionBackground.tsx`) gets compared at the document root, where it
+  paints *behind* that root wrapper's own background fill — completely
+  hidden, not just faint. This bit Hero's original background for most of
+  a session before anyone noticed (see `.ai/redesign/plan.md`, "the blobs
+  were invisible"). Always add `isolate` to the `<section>` (or whichever
+  positioned ancestor) that hosts a `-z-10` child.
