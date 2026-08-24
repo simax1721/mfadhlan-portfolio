@@ -11,7 +11,7 @@ export function FeaturedProject({ project }: { project: Project }) {
       <div className="relative aspect-video overflow-hidden border-b border-border md:aspect-auto md:border-b-0 md:border-r">
         <img
           src={project.image_url ?? temporaryProjectImage(project)}
-          alt={project.title}
+          alt={t("projects.previewAlt", { title: project.title })}
           loading="lazy"
           decoding="async"
           className="h-full w-full object-cover"

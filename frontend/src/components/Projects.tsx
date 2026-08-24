@@ -13,7 +13,7 @@ function ProjectCard({ project }: { project: Project }) {
       <div className="relative flex aspect-video items-center justify-center overflow-hidden border-b border-border bg-surface-2">
         <img
           src={project.image_url ?? temporaryProjectImage(project)}
-          alt={project.title}
+          alt={t("projects.previewAlt", { title: project.title })}
           loading="lazy"
           decoding="async"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

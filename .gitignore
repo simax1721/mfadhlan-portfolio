@@ -10,5 +10,9 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
+# Byte-compiled cache from Python-based skill scripts (.claude/skills/**)
+__pycache__/
+*.pyc
+
 # Claude Code session-local runtime state, not project content
 .claude/scheduled_tasks.lock

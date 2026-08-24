@@ -29,13 +29,19 @@ function App() {
 
   return (
     <div ref={containerRef} className="min-h-screen bg-bg">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-bg"
+      >
+        {t("nav.skipToContent")}
+      </a>
       <Navbar profile={data.profile} />
-      <main>
+      <main id="main-content">
         <Hero profile={data.profile} />
         <About profile={data.profile} />
+        <Projects projects={data.projects} loading={false} />
         <Skills skills={data.skills} loading={false} />
         <Experience experiences={data.experiences} loading={false} />
-        <Projects projects={data.projects} loading={false} />
         <EducationOrg
           education={data.education}
           organizations={data.organizations}

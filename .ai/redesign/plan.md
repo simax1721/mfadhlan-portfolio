@@ -11,22 +11,32 @@ commit locally as work lands, push only when explicitly asked.
 
 | # | Finding | Severity | File(s) | Status |
 |---|---------|----------|---------|--------|
-| 1 | Mobile nav hamburger hit-area (add `p-2`) | 🔴 Critical | `Navbar.tsx` | Pending |
-| 2 | No skip-link | 🔴 Critical | `App.tsx` | Pending |
-| 3 | Inter/JetBrains Mono declared but never loaded | 🟠 High | `index.html`, `index.css` | Pending |
-| 4 | `text-dim` contrast borderline in light mode | 🟡 Medium | `index.css` (`--color-text-dim` light) | Pending |
-| 5 | `LanguageToggle` tap size | 🟡 Medium | `LanguageToggle.tsx` | Pending |
-| 6 | Icon stroke-width consistency (1.75 vs 2) | 🟢 Minor | `ThemeToggle.tsx`, `Navbar.tsx`, `BackToTop.tsx` | Pending |
-| 7 | More descriptive alt text | 🟢 Minor | `Projects.tsx`, `FeaturedProject.tsx` | Blocked on P0 (real screenshots) |
+| 1 | Mobile nav hamburger hit-area (add `p-2`) | 🔴 Critical | `Navbar.tsx` | Done — verified 40×40px hit area at 375px width |
+| 2 | No skip-link | 🔴 Critical | `App.tsx`, `i18n/locales/{en,id}.ts` | Done — verified via real Tab keypress, `position:fixed` + visible on focus |
+| 3 | Inter/JetBrains Mono declared but never loaded | 🟠 High | `index.html` | Done — Google Fonts link added, verified via `document.fonts` (all weights `loaded`) |
+| 4 | `text-dim` contrast borderline in light mode | 🟡 Medium | `index.css` (`--color-text-dim` light) | Done — `#64748b`→`#5b6b82`, contrast ~4.5:1→~5.1:1 on `--color-bg` |
+| 5 | `LanguageToggle` tap size | 🟡 Medium | `LanguageToggle.tsx` | Done — `px-2.5 py-1`→`px-3 py-1.5`, verified 38×28px |
+| 6 | Icon stroke-width consistency (1.75 vs 2) | 🟢 Minor | `BackToTop.tsx` | Done — standardized on 1.75 (majority value across `Navbar`/`ThemeToggle`) |
+| 7 | More descriptive alt text | 🟢 Minor | `Projects.tsx`, `FeaturedProject.tsx`, `i18n/locales/{en,id}.ts` | Done — bare `project.title` → localized `t("projects.previewAlt", {title})` ("Preview of the {title} project" / "Pratinjau project {title}"), verified both locales render correctly on all 4 cards |
+
+## Positioning/visual-impact follow-up (2026-08-24)
+
+User re-review: "does this look like a backend/fullstack dev, and would a
+recruiter find it appealing?" — findings not in the original accessibility
+review, tracked separately.
+
+| # | Finding | Priority | File(s) | Status |
+|---|---------|----------|---------|--------|
+| P1 | All 4 projects have `image_url: null` — every card (incl. the Featured Case Study) shows a random unrelated picsum.photos stock photo | 🔴 Highest-impact | data (`projects.image_url`) | **Done (local)** — Aceh Cinema & Amanah Aceh use real screenshots of their live sites (cropped 16:9, user captured + ffmpeg crop). HydroSmart IoT & Berkah Bibit use branded SVG placeholders (dark/cyan theme, honest "Preview coming soon" tag) since they have no live demo. All 4 uploaded via Filament, verified live at localhost:5173. **Not yet applied to production.** |
+| P2 | Skill category order led with "Engineering Workflow" (AI tooling) ahead of "Backend" — undercut the site's own positioning | 🟠 High | `PortfolioSeeder.php`, new migration `2026_08_24_090000_reorder_skill_categories_backend_first.php` | Done — reordered Backend→Frontend→Database→Tools→Engineering Workflow, verified locally, **not yet applied to production** (needs `railway ssh` migrate or wait for next deploy) |
+| P3 | Section order puts Projects (strongest proof-of-work) after Hero→About→Skills→Experience, later than the `portfolio-grid` pattern's Hero→Projects→About | 🟡 Discuss | `App.tsx`, `Navbar.tsx` (section + nav order) | Done — discussed 3 options (full reorder / partial / leave as-is), chose partial: Hero→About→**Projects**→Skills→Experience→Education→Contact. Nav links + scroll-spy `SECTION_IDS` reordered to match. Verified locally (lint, build, live render, nav order) |
 
 ## Suggested order
 
-1. Items 1–2 (Critical, accessibility) — small, isolated, low-risk changes.
-2. Item 3 (High, font loading) — pick an approach first (see
-   [decisions.md](decisions.md) open question), then implement.
-3. Items 4–5 (Medium) — quick token/spacing tweaks.
-4. Item 6 (Minor) — bundle with whichever component touch already includes
-   one of the affected icons, rather than a standalone pass.
+1. ~~Items 1–2 (Critical, accessibility) — small, isolated, low-risk changes.~~ Done.
+2. ~~Item 3 (High, font loading) — see [decisions.md](decisions.md).~~ Done.
+3. ~~Items 4–5 (Medium) — quick token/spacing tweaks.~~ Done.
+4. ~~Item 6 (Minor) — icon stroke-width consistency.~~ Done.
 5. Item 7 — stays blocked until P0 (real project screenshots) is picked up.
 
 ## Verification per item

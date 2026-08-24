@@ -31,22 +31,19 @@ in `review-homepage.md` cite the dataset for backing, but every fix
 recommendation was reasoned through against this project's actual code, not
 applied blindly.
 
-## Open question: font-loading fix approach (review finding #3)
+## Font-loading fix approach (review finding #3) — decided: load the fonts
 
-Two viable options, not yet decided:
-
-1. **Actually load the fonts** — add a Google Fonts `<link>`
-   (`Inter` + `JetBrains Mono`, `font-display: swap`) to `index.html`. Keeps
-   the intended typographic identity, costs one more render-blocking-ish
-   request (mitigated by `swap` + `preconnect`).
-2. **Match the tokens to reality** — change `--font-sans`/`--font-mono` in
-   `index.css` to name only fonts already available (system font stack),
-   dropping the Inter/JetBrains Mono names entirely. Zero extra requests,
-   but changes the site's typographic character from what was originally
-   intended (the "developer/technical" mono-heavy aesthetic depends on a
-   consistent monospace face).
-
-Decide before starting plan.md item #3.
+Chose option 1: added a Google Fonts `<link>` to `frontend/index.html`
+(`preconnect` to both `fonts.googleapis.com`/`fonts.gstatic.com` +
+`Inter:wght@400;500;600;700` + `JetBrains+Mono:wght@400;500;600` +
+`display=swap`). Weights picked to match what's actually used in the
+codebase (grepped for `font-mono`+`font-bold` combos — none found, so mono
+didn't need 700). Verified via `document.fonts` — all requested
+family/weight combos report `status: "loaded"`, and computed `font-family`
+on both a heading and a `.font-mono` element resolves to the real fonts
+first, system fallback second. Keeps the intended typographic identity
+(the "developer/technical" mono-heavy aesthetic) rather than quietly
+degrading to system fonts.
 
 ## No git push during redesign
 

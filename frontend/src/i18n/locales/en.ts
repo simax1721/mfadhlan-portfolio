@@ -8,6 +8,7 @@ export const en = {
     contact: "Contact",
     letsTalk: "Let's talk",
     backToTop: "Back to top",
+    skipToContent: "Skip to main content",
   },
   hero: {
     openToRemote: "Open to Remote Work · {location}",
@@ -39,6 +40,7 @@ export const en = {
     source: "Source ↗",
     demoSoon: "Demo coming soon",
     empty: "Projects will appear here soon.",
+    previewAlt: "Preview of the {title} project",
   },
   featured: {
     eyebrow: "Featured Case Study",

@@ -47,10 +47,10 @@ class PortfolioSeeder extends Seeder
         $coreSkills = ['Laravel', 'React.js', 'MySQL', 'REST API', 'Authentication (Sanctum, OAuth)', 'Midtrans'];
 
         $categories = [
-            'Engineering Workflow' => [
-                'highlighted' => true,
-                'skills' => ['Vibe Coding', 'Claude Code', 'Codex'],
-            ],
+            // Backend leads — this is the site's core positioning
+            // ("Backend / Fullstack Developer"); Engineering Workflow (AI
+            // tooling) is real but secondary, so it goes last rather than
+            // first.
             'Backend' => [
                 'highlighted' => false,
                 'skills' => ['Laravel', 'PHP', 'Node.js', 'REST API', 'Authentication (Sanctum, OAuth)', 'Midtrans'],
@@ -66,6 +66,10 @@ class PortfolioSeeder extends Seeder
             'Tools' => [
                 'highlighted' => false,
                 'skills' => ['Git', 'GitHub', 'Postman'],
+            ],
+            'Engineering Workflow' => [
+                'highlighted' => true,
+                'skills' => ['Vibe Coding', 'Claude Code', 'Codex'],
             ],
         ];
 

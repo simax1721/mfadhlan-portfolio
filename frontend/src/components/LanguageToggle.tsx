@@ -14,7 +14,7 @@ export function LanguageToggle() {
           key={code}
           onClick={() => setLocale(code)}
           aria-pressed={locale === code}
-          className={`rounded-full px-2.5 py-1 uppercase transition-colors ${
+          className={`rounded-full px-3 py-1.5 uppercase transition-colors ${
             locale === code
               ? "bg-accent text-bg"
               : "text-text-dim hover:text-heading"

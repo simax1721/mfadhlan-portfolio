@@ -10,6 +10,7 @@ export const id: typeof en = {
     contact: "Kontak",
     letsTalk: "Hubungi saya",
     backToTop: "Kembali ke atas",
+    skipToContent: "Langsung ke konten utama",
   },
   hero: {
     openToRemote: "Terbuka untuk Remote · {location}",
@@ -41,6 +42,7 @@ export const id: typeof en = {
     source: "Sumber ↗",
     demoSoon: "Demo segera hadir",
     empty: "Proyek akan segera tampil di sini.",
+    previewAlt: "Pratinjau project {title}",
   },
   featured: {
     eyebrow: "Studi Kasus Unggulan",

@@ -13,9 +13,9 @@ function githubHandle(githubUrl: string | null): string | null {
 
 const SECTION_IDS = [
   "about",
+  "projects",
   "skills",
   "experience",
-  "projects",
   "education",
   "contact",
 ];
@@ -29,9 +29,9 @@ export function Navbar({ profile }: { profile: Profile }) {
 
   const LINKS = [
     { href: "#about", id: "about", label: t("nav.about") },
+    { href: "#projects", id: "projects", label: t("nav.projects") },
     { href: "#skills", id: "skills", label: t("nav.skills") },
     { href: "#experience", id: "experience", label: t("nav.experience") },
-    { href: "#projects", id: "projects", label: t("nav.projects") },
     { href: "#education", id: "education", label: t("nav.education") },
     { href: "#contact", id: "contact", label: t("nav.contact") },
   ];
@@ -120,7 +120,7 @@ export function Navbar({ profile }: { profile: Profile }) {
           </a>
 
           <button
-            className="rounded text-heading md:hidden"
+            className="rounded p-2 text-heading md:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={open}
