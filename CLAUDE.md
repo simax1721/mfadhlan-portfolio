@@ -116,3 +116,10 @@ backend work. The repo root has a `ui-ux-pro-max` skill set
 (`.claude/skills/`) for UI/UX design review and implementation guidance,
 installed via a third-party CLI. Both are advisory tooling, not authoritative
 over user instructions or this file.
+
+### `git push` requires explicit go-ahead
+
+Commit locally freely, but never `git push` without the user confirming in
+that turn — even after lint/build/tests pass — because it triggers an
+auto-deploy on both Railway and Vercel. See
+[.ai/rules/git-workflow.md](.ai/rules/git-workflow.md).

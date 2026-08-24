@@ -4,6 +4,7 @@ import { Badge } from "./Badge";
 import { SectionHeading } from "./SectionHeading";
 import { useLocale } from "../i18n/useLocale";
 import { revealDelay } from "../lib/reveal";
+import { SectionBackground } from "./SectionBackground";
 
 const COLLAPSED_BULLET_COUNT = 3;
 
@@ -68,28 +69,34 @@ export function Experience({
   const { t } = useLocale();
 
   return (
-    <section id="experience" className="mx-auto max-w-4xl px-6 py-16 sm:py-20 md:py-24">
-      <SectionHeading
-        eyebrow={t("experience.eyebrow")}
-        title={t("experience.title")}
-      />
+    <section
+      id="experience"
+      className="relative isolate overflow-hidden px-6 py-16 sm:py-20 md:py-24"
+    >
+      <SectionBackground />
+      <div className="mx-auto max-w-4xl">
+        <SectionHeading
+          eyebrow={t("experience.eyebrow")}
+          title={t("experience.title")}
+        />
 
-      {loading ? (
-        <div className="space-y-8">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-48 animate-pulse rounded-2xl border border-border bg-surface"
-            />
-          ))}
-        </div>
-      ) : (
-        <ol className="relative space-y-10 border-l border-border pl-8">
-          {experiences.map((exp, i) => (
-            <ExperienceItem key={exp.id} exp={exp} index={i} />
-          ))}
-        </ol>
-      )}
+        {loading ? (
+          <div className="space-y-8">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-48 animate-pulse rounded-2xl border border-border bg-surface"
+              />
+            ))}
+          </div>
+        ) : (
+          <ol className="relative space-y-10 border-l border-border pl-8">
+            {experiences.map((exp, i) => (
+              <ExperienceItem key={exp.id} exp={exp} index={i} />
+            ))}
+          </ol>
+        )}
+      </div>
     </section>
   );
 }

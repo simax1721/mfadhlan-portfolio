@@ -16,7 +16,7 @@ export function FullPageLoader() {
     lineIndex > 0 ? LOADER_LINES[0] : sliceSegments(LOADER_LINES[0], charIndex);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg px-6">
+    <div className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-bg px-6">
       <div className="dot-grid -z-10" aria-hidden="true" />
       <div
         className="pointer-events-none absolute inset-0 -z-10"
