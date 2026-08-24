@@ -162,16 +162,16 @@
         @endforeach
     @endif
 
-    @if($skillsByCategory->isNotEmpty())
+    @if($skillCategories->isNotEmpty())
         <div class="section-title">
             {{ $locale === 'id' ? 'Keahlian Teknis' : 'Technical Skills' }}
         </div>
         <div class="skills-table">
-            @foreach($skillsByCategory as $category => $items)
+            @foreach($skillCategories as $category)
                 <div class="skills-col">
-                    <div class="skills-col-title">{{ $category }}</div>
+                    <div class="skills-col-title">{{ $category->name }}</div>
                     <ul>
-                        @foreach($items as $skill)
+                        @foreach($category->skills as $skill)
                             <li>{{ $skill->name }}</li>
                         @endforeach
                     </ul>

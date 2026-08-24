@@ -8,13 +8,12 @@ use App\Http\Resources\ExperienceResource;
 use App\Http\Resources\OrganizationEntryResource;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\ProjectResource;
-use App\Http\Resources\SkillResource;
 use App\Models\EducationEntry;
 use App\Models\Experience;
 use App\Models\OrganizationEntry;
 use App\Models\Profile;
 use App\Models\Project;
-use App\Models\Skill;
+use App\Models\SkillCategory;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -37,13 +36,11 @@ class CvController extends Controller
             : null;
 
         $pdfBinary = Cache::remember("portfolio.cv.{$locale}", now()->addMinutes(30), function () use ($profile, $photoPath, $locale) {
-            $skillsByCategory = Skill::orderBy('order')->get()->groupBy('category');
-
             $data = [
                 'locale' => $locale,
                 'profile' => (new ProfileResource($profile))->resolve(),
                 'photoPath' => $photoPath,
-                'skillsByCategory' => $skillsByCategory,
+                'skillCategories' => SkillCategory::with('skills')->orderBy('order')->get(),
                 'experiences' => ExperienceResource::collection(Experience::orderBy('order')->get())->resolve(),
                 'projects' => ProjectResource::collection(Project::orderBy('order')->get())->resolve(),
                 'education' => EducationEntryResource::collection(EducationEntry::orderBy('order')->get())->resolve(),
@@ -56,7 +53,7 @@ class CvController extends Controller
         });
 
         $slug = str($profile->name ?: 'CV')->slug('-');
-        $filename = "CV-{$slug}-" . strtoupper($locale) . '.pdf';
+        $filename = "CV-{$slug}-".strtoupper($locale).'.pdf';
 
         return response($pdfBinary, 200, [
             'Content-Type' => 'application/pdf',
