@@ -43,6 +43,8 @@ export const id: typeof en = {
     demoSoon: "Demo segera hadir",
     empty: "Proyek akan segera tampil di sini.",
     previewAlt: "Pratinjau project {title}",
+    showMore: "Tampilkan semua proyek",
+    showLess: "Tampilkan lebih sedikit",
   },
   featured: {
     eyebrow: "Studi Kasus Unggulan",

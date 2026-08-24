@@ -7,22 +7,22 @@ export function FeaturedProject({ project }: { project: Project }) {
   const { t } = useLocale();
 
   return (
-    <article className="reveal mb-12 overflow-hidden rounded-2xl border border-accent/30 bg-surface shadow-sm md:grid md:grid-cols-2">
-      <div className="relative aspect-video overflow-hidden border-b border-border md:aspect-auto md:border-b-0 md:border-r">
+    <article className="reveal mb-12 overflow-hidden rounded-2xl border border-accent/30 bg-surface shadow-sm">
+      <div className="relative aspect-video overflow-hidden border-b border-border bg-surface-2">
         <img
           src={project.image_url ?? temporaryProjectImage(project)}
           alt={t("projects.previewAlt", { title: project.title })}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
         />
       </div>
 
-      <div className="flex flex-col p-6 sm:p-8">
+      <div className="flex flex-col p-6 sm:p-10">
         <p className="font-mono text-xs uppercase tracking-widest text-accent">
           {t("featured.eyebrow")}
         </p>
-        <h3 className="mt-2 text-2xl font-bold text-heading">
+        <h3 className="mt-2 text-3xl font-bold text-heading">
           {project.title}
         </h3>
         {project.subtitle && (

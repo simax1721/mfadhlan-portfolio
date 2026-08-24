@@ -41,6 +41,8 @@ export const en = {
     demoSoon: "Demo coming soon",
     empty: "Projects will appear here soon.",
     previewAlt: "Preview of the {title} project",
+    showMore: "Show all projects",
+    showLess: "Show fewer projects",
   },
   featured: {
     eyebrow: "Featured Case Study",

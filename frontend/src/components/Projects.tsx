@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Project } from "../lib/types";
 import { Badge } from "./Badge";
 import { SectionHeading } from "./SectionHeading";
@@ -6,6 +7,15 @@ import { temporaryProjectImage } from "../lib/projectImage";
 import { FeaturedProject } from "./FeaturedProject";
 import { revealDelay } from "../lib/reveal";
 import { SectionBackground } from "./SectionBackground";
+
+// Keeps the section scannable as more projects are added over time —
+// rather than a carousel (poor discoverability: most visitors never
+// interact with one, so anything past the first slide effectively goes
+// unseen — bad odds for a portfolio's actual job) this reuses the same
+// "show more" progressive-disclosure pattern Experience already uses for
+// its bullets: everything stays reachable in one click, nothing is ever
+// hidden behind swipe/drag interaction.
+const COLLAPSED_PROJECT_COUNT = 6;
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const { t } = useLocale();
@@ -92,10 +102,15 @@ export function Projects({
   loading: boolean;
 }) {
   const { t } = useLocale();
+  const [expanded, setExpanded] = useState(false);
   const featuredProject = projects.find((p) => p.featured);
   const restProjects = featuredProject
     ? projects.filter((p) => p.id !== featuredProject.id)
     : projects;
+  const hasMore = restProjects.length > COLLAPSED_PROJECT_COUNT;
+  const visibleProjects = expanded
+    ? restProjects
+    : restProjects.slice(0, COLLAPSED_PROJECT_COUNT);
 
   return (
     <section
@@ -128,9 +143,22 @@ export function Projects({
             {featuredProject && <FeaturedProject project={featuredProject} />}
             {restProjects.length > 0 && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {restProjects.map((project, i) => (
+                {visibleProjects.map((project, i) => (
                   <ProjectCard key={project.id} project={project} index={i} />
                 ))}
+              </div>
+            )}
+            {hasMore && (
+              <div className="mt-8 text-center">
+                <button
+                  type="button"
+                  onClick={() => setExpanded((v) => !v)}
+                  className="btn-secondary"
+                >
+                  {expanded
+                    ? t("projects.showLess")
+                    : t("projects.showMore")}
+                </button>
               </div>
             )}
           </>
