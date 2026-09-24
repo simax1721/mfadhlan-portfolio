@@ -131,6 +131,53 @@ Worked through `frontend/FRONTEND_IMPROVEMENT_PLAN.md`'s P1–P3 backlog
   gated to production builds only (`import.meta.env.PROD`) so local dev
   stays instant.
 
+## 2026-09-25 — Railway usage limit forced a migration to a new project + Supabase
+
+- **The original Railway account hit its usage limit**, blocking further
+  deploys to the `mfadhlan.up.railway.app` backend. Evaluated Render as a
+  replacement (Docker-only builder, no free Nixpacks-style PHP buildpack)
+  but its signup flow demanded card verification; same story on Koyeb,
+  whose free Starter tier has effectively been discontinued for new
+  accounts post-acquisition. Landed on **a second, separate free Railway
+  account** for compute, keeping Railway's git-push-to-deploy workflow, but
+  moved both the database and file storage off Railway itself so neither is
+  tied to whichever compute host is used going forward.
+- **Database moved to Supabase Postgres.** Connected via the Session
+  pooler (`aws-0-ap-northeast-1.pooler.supabase.com:5432`), not the direct
+  `db.<ref>.supabase.co` host — the direct host is IPv6-only and
+  unreachable from most PaaS hosts. Ran `migrate --force` and `db:seed
+  --force` directly from a local machine with the Supabase credentials in
+  `.env` (needed enabling the `pdo_pgsql`/`pgsql` PHP extensions in the
+  local Laragon `php.ini`, which ship disabled by default).
+- **`backend/Dockerfile` was added for the (ultimately abandoned) Render
+  attempt, but it broke the first deploy on the new Railway project**:
+  Railway silently builds from a `Dockerfile` when one exists in the
+  service root, overriding `railway.json`'s declared `"builder": "NIXPACKS"`
+  with no warning. `composer install` failed because `filament/support`
+  requires `ext-intl`, which the Dockerfile didn't install — fixed by
+  adding `intl`, `mbstring`, and `curl` to its `docker-php-ext-install`
+  line. See `.ai/rules/deploy-gotchas.md`.
+- **File uploads (profile photo, CV, project images) moved to Supabase
+  Storage**, an S3-compatible object store, via a new `s3` disk
+  (`config/filesystems.php`, already present but unused) — added
+  `league/flysystem-aws-s3-v3`, pointed the three Filament `FileUpload`
+  fields and their matching model URL accessors (`Profile.php`,
+  `Project.php`) at it. This is the same ephemeral-filesystem problem the
+  2026-08-25 entry fixed with a Railway Volume — that volume didn't carry
+  over to the new Railway project, so this time storage was decoupled from
+  the compute host entirely instead of re-attaching another volume.
+  Confirmed working with a real upload + public-URL fetch before rolling
+  it out; the profile photo, CV, and project images uploaded before this
+  point were unrecoverable (they lived only on the old Railway container)
+  and had to be re-uploaded through Filament afterward.
+- Fixed a Vercel config mistake found along the way: `VITE_API_URL` was set
+  as a **Secret** env var, which doesn't apply to `VITE_`-prefixed vars —
+  Vite inlines them into the public JS bundle at build time regardless, so
+  "Secret" only blocks viewing the value again later, with no actual
+  privacy benefit. Switched to **Config**.
+- Vendored two more skills into `backend/.claude/skills/`: `supabase` and
+  `supabase-postgres-best-practices`.
+
 ## Status as of this entry
 
 Redesign is ongoing, not finished — full detail in `.ai/redesign/plan.md`.
@@ -141,8 +188,14 @@ loading screen restyle and later min-delay fix, animation polish (stagger,
 BackToTop/mobile-menu transitions), a mobile nav-scroll + spacing fix,
 section backgrounds and their later simplification/bug-fix pass, a
 Featured Project layout rework, and a persistent-storage fix for Railway
-uploads. Each round has been started by a new instruction from Fadhlan
-(the user) rather than a fixed backlog — expect more. Work is committed
-locally as it lands and pushed only on Fadhlan's explicit go-ahead each
-time (see `.ai/rules/git-workflow.md`) — that's happened once so far
-(2026-08-25), not on a fixed schedule.
+uploads (superseded 2026-09-25 by the move to Supabase Storage, see below).
+Each round has been started by a new instruction from Fadhlan (the user)
+rather than a fixed backlog — expect more. Work is committed locally as it
+lands and pushed only on Fadhlan's explicit go-ahead each time (see
+`.ai/rules/git-workflow.md`) — not on a fixed schedule; pushes so far:
+2026-08-25 and three more during the 2026-09-25 Railway/Supabase migration.
+
+Separately from the redesign, 2026-09-25 replaced the deploy infrastructure
+itself (new Railway project, Supabase for Postgres and Storage) after the
+original Railway account hit its usage limit — see that entry above for
+detail.

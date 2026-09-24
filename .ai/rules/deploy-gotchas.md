@@ -1,5 +1,26 @@
-# Production deploy gotchas (Railway + Postgres)
+# Production deploy gotchas (Railway + Supabase)
 
+- **Dockerfile silently overrides `railway.json`'s Nixpacks builder:**
+  `railway.json` declares `"builder": "NIXPACKS"`, but Railway builds
+  `backend/Dockerfile` instead whenever one exists in the service's root
+  directory — the `builder` field is ignored, with no warning. Add any new
+  required PHP extension to the Dockerfile's `docker-php-ext-install` line
+  (currently `pdo_pgsql pgsql zip gd bcmath intl mbstring curl`); don't
+  assume Nixpacks auto-detection is still in effect. This caused a real
+  outage: `composer install` failed because `filament/support` requires
+  `ext-intl`, which wasn't installed.
+- **Database is Supabase Postgres, not a Railway plugin:** `DB_HOST` points
+  at Supabase's Session pooler (`aws-0-<region>.pooler.supabase.com`, port
+  `5432`), not the direct `db.<ref>.supabase.co` host — the direct host is
+  IPv6-only and unreachable from Railway. Needs `DB_SSLMODE=require`.
+- **File uploads go to Supabase Storage (S3), not local disk:** Railway's
+  filesystem is ephemeral, so anything on the local `public` disk is lost on
+  the next deploy/restart. The `s3` disk in `config/filesystems.php` is
+  wired to Supabase Storage's S3-compatible API — needs `AWS_ENDPOINT`
+  pointed at `https://<project-ref>.storage.supabase.co/storage/v1/s3` and
+  `AWS_USE_PATH_STYLE_ENDPOINT=true` (Supabase's S3 endpoint only supports
+  path-style addressing). Uploaded before this was set up? Those files are
+  gone — re-upload through Filament once the disk is switched.
 - **HTTPS behind the proxy:** `bootstrap/app.php` calls
   `trustProxies(at: '*')` and `AppServiceProvider::boot()` calls
   `URL::forceScheme('https')` in production. Railway terminates TLS at the

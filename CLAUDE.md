@@ -7,12 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 A personal portfolio site. `backend/` is a Laravel 13 + Filament 3 API/CMS;
 `frontend/` is a React 19 + Vite + TypeScript + Tailwind CSS 4 SPA that reads
 all its content live from the backend — no hardcoded copy. They deploy to
-separate hosts (Railway for the backend + Postgres, Vercel for the frontend)
-and are developed/run independently. See [README.md](README.md) for the full
-feature list and deployment steps, [CHANGELOG.md](CHANGELOG.md) for a
-chronological record of major work, `.ai/rules/index.md` for durable,
-area-scoped technical rules, and `.ai/redesign/` for in-progress redesign
-tracking.
+separate hosts (Railway for the backend, Vercel for the frontend, Supabase
+for Postgres and file storage) and are developed/run independently. See
+[README.md](README.md) for the full feature list and deployment steps,
+[CHANGELOG.md](CHANGELOG.md) for a chronological record of major work,
+`.ai/rules/index.md` for durable, area-scoped technical rules, and
+`.ai/redesign/` for in-progress redesign tracking.
 
 ## Commands
 
@@ -106,16 +106,44 @@ forwards plain HTTP (otherwise assets mixed-content-block). `User` implements
 `migrate --force && storage:link --force && config:cache` on every boot —
 migrations run automatically on deploy, but **`db:seed` does not** and must
 be run manually (`railway ssh "php artisan db:seed --force"`) after schema
-changes that also need new seed data.
+changes that also need new seed data. The database itself is Supabase
+Postgres, not a Railway-managed plugin — `DB_*` env vars point at Supabase's
+Session pooler host, not Railway.
+
+### Railway builds `backend/Dockerfile`, not `railway.json`'s Nixpacks builder
+
+`railway.json` still declares `"builder": "NIXPACKS"`, but a `Dockerfile`
+present in the service's root directory takes priority over that field —
+Railway builds with Docker instead, silently. Any new required PHP
+extension must be added to `Dockerfile`'s `docker-php-ext-install` line
+(currently `pdo_pgsql pgsql zip gd bcmath intl mbstring curl`); it will not
+be auto-detected the way Nixpacks would. This bit the project once already:
+`composer install` failed in production because `filament/support` needs
+`ext-intl`, which wasn't in the Dockerfile.
+
+### Uploaded files live on Supabase Storage, not local disk
+
+Railway's filesystem is ephemeral — anything written to the local `public`
+disk disappears on the next deploy/restart. The three `FileUpload` fields
+(profile photo + CV in `ManageProfile.php`, project image in
+`ProjectResource.php`) and their matching `getPhotoUrlAttribute` /
+`getCvUrlAttribute` / `getImageUrlAttribute` accessors (`Profile.php`,
+`Project.php`) target the `s3` disk (`config/filesystems.php`), backed by
+Supabase Storage's S3-compatible API. Needs `AWS_ENDPOINT` pointed at
+`https://<project-ref>.storage.supabase.co/storage/v1/s3` and
+`AWS_USE_PATH_STYLE_ENDPOINT=true` — Supabase's S3 endpoint only supports
+path-style addressing, not virtual-hosted-style.
 
 ### AI tooling installed in this repo
 
 `backend/` has [Laravel Boost](https://laravel.com/docs/ai) (`--dev` only,
 excluded from production builds) — an MCP server plus guidelines/skills for
-backend work. The repo root has a `ui-ux-pro-max` skill set
-(`.claude/skills/`) for UI/UX design review and implementation guidance,
-installed via a third-party CLI. Both are advisory tooling, not authoritative
-over user instructions or this file.
+backend work, including vendored `supabase` and `supabase-postgres-best-practices`
+skills (`backend/.claude/skills/`) for the Supabase-backed database and
+storage. The repo root has a `ui-ux-pro-max` skill set (`.claude/skills/`)
+for UI/UX design review and implementation guidance, installed via a
+third-party CLI. All of these are advisory tooling, not authoritative over
+user instructions or this file.
 
 ### `git push` requires explicit go-ahead
 

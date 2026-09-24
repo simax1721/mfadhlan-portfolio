@@ -12,7 +12,7 @@ frontend/   React + Vite + TypeScript + Tailwind (public site)
 
 **Live:**
 - Frontend — https://mfadhlan1721.vercel.app
-- Backend admin — https://mfadhlan.up.railway.app/admin
+- Backend admin — https://mfadhlan-portfolio-production.up.railway.app/admin
 
 ## Features
 
@@ -30,6 +30,10 @@ frontend/   React + Vite + TypeScript + Tailwind (public site)
 - **Featured case study** — one project can be flagged `featured` in
   Filament to get an expanded case-study layout on the homepage instead
   of the standard project card.
+- **Uploads on object storage** — profile photo, CV file, and project
+  images upload straight to Supabase Storage (S3-compatible) instead of
+  the backend's local disk, so they survive redeploys on hosts with
+  ephemeral filesystems (Railway).
 
 ## Local setup
 
@@ -47,6 +51,11 @@ The seeder prints a generated admin password once — save it. Log in at
 `http://localhost:8000/admin` with that email/password, or set
 `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `backend/.env` before seeding to pin
 your own credentials.
+
+File uploads (profile photo, CV, project images) go straight to the `s3`
+disk (Supabase Storage) — set the `AWS_*` vars in `backend/.env` (see
+`.env.example`) to a Supabase Storage bucket to test uploads locally; the
+rest of the app works fine without them.
 
 **Frontend**
 
@@ -81,30 +90,54 @@ hosts.
 1. **Push to GitHub** — `git push` to your remote; both platforms below
    auto-deploy on push to `main`.
 
-2. **Backend → Railway**
+2. **Database & file storage → Supabase**
+   - Create a Supabase project; grab the Postgres **Session pooler**
+     connection details (Project Settings → Database) — host, port, user,
+     database, password. Use the pooler host, not the direct `db.*.supabase.co`
+     host, which is IPv6-only and unreachable from most PaaS hosts.
+   - Create a **Storage bucket** (Storage → New bucket, mark it **Public**),
+     then generate an S3 access key (Project Settings → Storage → S3
+     Connection → New access key).
+
+3. **Backend → Railway**
    - New service from the GitHub repo, root directory `backend`
-   - Add a **PostgreSQL** database plugin (MySQL works too, but Postgres
-     avoids the `caching_sha2_password` auth headaches on managed MySQL 9)
-   - `railway.json` pins the Nixpacks builder and chains
+   - Railway builds `backend/Dockerfile` (present in the repo) rather than
+     `railway.json`'s declared Nixpacks builder — a `Dockerfile` in the root
+     directory silently takes priority. Any new required PHP extension goes
+     in the Dockerfile's `docker-php-ext-install` line, not left to
+     auto-detection.
+   - `railway.json`'s `startCommand` chains
      `migrate --force && storage:link --force && config:cache` before
      `php artisan serve` on boot — migrations run automatically on deploy
    - Required env vars: `APP_KEY`, `APP_ENV=production`, `APP_URL`,
      `CORS_ALLOWED_ORIGINS` (your Vercel URL), `ADMIN_EMAIL`/`ADMIN_PASSWORD`
      (used by the admin seeder — keep these set so re-seeding never resets
-     the login), plus the `DB_*` vars Railway injects from the Postgres plugin
+     the login), the `DB_*` vars from the Supabase pooler above (plus
+     `DB_CONNECTION=pgsql` and `DB_SSLMODE=require`), and the `AWS_*` vars
+     from the Supabase Storage bucket above (`AWS_ENDPOINT` is
+     `https://<project-ref>.storage.supabase.co/storage/v1/s3`, `AWS_URL` is
+     `https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>`,
+     `AWS_USE_PATH_STYLE_ENDPOINT=true` — Supabase's S3 endpoint only
+     supports path-style addressing)
    - Two production-only gotchas already handled in code, worth knowing about:
      `trustProxies(at: '*')` + `URL::forceScheme('https')` (Railway
      terminates TLS at the edge) and `User` implementing `FilamentUser`
      (Filament 403s any user that doesn't, outside `APP_ENV=local`)
    - Seed once manually after the first deploy:
-     `railway ssh "php artisan db:seed --force"`
+     `railway ssh "php artisan db:seed --force"` — or run
+     `php artisan migrate --seed` from a machine with the Supabase
+     credentials in its local `.env`, which reaches the same database
+     directly
 
-3. **Frontend → Vercel**
+4. **Frontend → Vercel**
    - Import the GitHub repo, root directory `frontend`
    - Build command `npm run build`, output directory `dist`
-   - Set env var `VITE_API_URL` to `<backend-url>/api`
+   - Set env var `VITE_API_URL` to `<backend-url>/api` — use the **Config**
+     type, not **Secret**: `VITE_`-prefixed vars are inlined into the public
+     JS bundle at build time regardless, so "Secret" only prevents you from
+     viewing it again later, with no actual security benefit
 
-4. **Wire them together**
+5. **Wire them together**
    - Set `CORS_ALLOWED_ORIGINS` on the backend to the Vercel URL
    - Confirm the live frontend loads data from the live backend
 
@@ -119,4 +152,4 @@ dependency, excluded from production builds.
 
 ## Tech stack
 
-Laravel 13 · Filament 3 · PostgreSQL · React 19 · Vite · TypeScript · Tailwind CSS 4
+Laravel 13 · Filament 3 · Supabase (Postgres + Storage) · React 19 · Vite · TypeScript · Tailwind CSS 4
