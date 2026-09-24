@@ -26,12 +26,12 @@ class Profile extends Model
 
     public function getCvUrlAttribute(): ?string
     {
-        return $this->cv_file ? Storage::disk('public')->url($this->cv_file) : null;
+        return $this->cv_file ? Storage::disk('s3')->url($this->cv_file) : null;
     }
 
     public function getPhotoUrlAttribute(): ?string
     {
-        return $this->photo ? Storage::disk('public')->url($this->photo) : null;
+        return $this->photo ? Storage::disk('s3')->url($this->photo) : null;
     }
 
     /** There is only ever one profile row; create it on first access. */

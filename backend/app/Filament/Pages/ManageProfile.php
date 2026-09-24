@@ -95,11 +95,15 @@ class ManageProfile extends Page implements HasForms
                     ->schema([
                         Forms\Components\FileUpload::make('photo')
                             ->image()
+                            ->disk('s3')
+                            ->visibility('public')
                             ->directory('profile')
                             ->imageEditor(),
                         Forms\Components\FileUpload::make('cv_file')
                             ->label('CV (PDF)')
                             ->acceptedFileTypes(['application/pdf'])
+                            ->disk('s3')
+                            ->visibility('public')
                             ->directory('profile'),
                     ]),
             ])

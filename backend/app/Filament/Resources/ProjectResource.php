@@ -29,6 +29,8 @@ class ProjectResource extends Resource
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('image')
                     ->image()
+                    ->disk('s3')
+                    ->visibility('public')
                     ->directory('projects')
                     ->imageEditor(),
                 Forms\Components\TagsInput::make('tech_stack')
