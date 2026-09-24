@@ -83,9 +83,9 @@
 <body>
 
     <div class="header">
-        @if($photoPath)
+        @if($photoDataUri)
             <div class="photo-cell">
-                <div class="photo-box"><img src="{{ $photoPath }}" alt=""></div>
+                <div class="photo-box"><img src="{{ $photoDataUri }}" alt=""></div>
             </div>
         @endif
         <div class="info-cell">

@@ -29,17 +29,23 @@ class CvController extends Controller
         $locale = app()->getLocale();
         $profile = Profile::current();
 
-        // Resolved as a local filesystem path (not a URL) so dompdf can
-        // embed it directly without needing to fetch itself over HTTP.
-        $photoPath = $profile->photo && Storage::disk('public')->exists($profile->photo)
-            ? Storage::disk('public')->path($profile->photo)
-            : null;
+        // Embedded as a base64 data URI rather than passing the Supabase
+        // Storage URL straight through, so dompdf never needs its own
+        // remote-fetch capability enabled just to render one photo.
+        $photoDataUri = null;
+        if ($profile->photo && Storage::disk('s3')->exists($profile->photo)) {
+            $contents = Storage::disk('s3')->get($profile->photo);
+            if ($contents) {
+                $mimeType = Storage::disk('s3')->mimeType($profile->photo) ?: 'image/jpeg';
+                $photoDataUri = 'data:'.$mimeType.';base64,'.base64_encode($contents);
+            }
+        }
 
-        $pdfBinary = Cache::remember("portfolio.cv.{$locale}", now()->addMinutes(30), function () use ($profile, $photoPath, $locale) {
+        $pdfBinary = Cache::remember("portfolio.cv.{$locale}", now()->addMinutes(30), function () use ($profile, $photoDataUri, $locale) {
             $data = [
                 'locale' => $locale,
                 'profile' => (new ProfileResource($profile))->resolve(),
-                'photoPath' => $photoPath,
+                'photoDataUri' => $photoDataUri,
                 'skillCategories' => SkillCategory::with('skills')->orderBy('order')->get(),
                 'experiences' => ExperienceResource::collection(Experience::orderBy('order')->get())->resolve(),
                 'projects' => ProjectResource::collection(Project::orderBy('order')->get())->resolve(),
